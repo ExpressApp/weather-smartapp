@@ -34,28 +34,28 @@ async def bot_status(
     "/command/smartapp", name="debug:samrtapp-event", status_code=HTTP_202_ACCEPTED
 )
 async def smartapp_debug(message: IncomingMessage) -> dict:
-    """Send botx command to sender"""
+    """Send botx command to sender."""
     # all internal mutations
     bot_message = Message.from_dict(message.dict(), bot)
-    incoming_smartapp = events.SmartAppEvent(**bot_message.data.__dict__)
+    incoming_smartapp = events.SmartAppEvent(
+        **bot_message.data.__dict__  # noqa: WPS609
+    )
 
     try:
         response = await execute_smart_app(incoming_smartapp)
-    except Exception as e:
-        return {"executing command error": e.args}
+    except Exception as exc:
+        return {"executing command error": exc.args}
 
     sending_smartapp = SendingSmartApp.from_message_with_smartapp(response, bot_message)
 
     sending_smartapp_dict = smartapp_method.SmartAppEvent(
         **sending_smartapp.dict()
     ).dict()
-    sending_command = {**sending_smartapp_dict}
-
-    return sending_command
+    return {**sending_smartapp_dict}
 
 
 @router.post("/command/echo", name="debug:echo", status_code=HTTP_202_ACCEPTED)
-async def smartapp_debug(request: Request) -> dict:
-    """Echo"""
+async def smartapp_echo(request: Request) -> dict:
+    """Echo."""
 
     return await request.json()

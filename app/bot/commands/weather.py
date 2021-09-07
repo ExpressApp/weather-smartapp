@@ -24,6 +24,7 @@ WEATHER_API_BASE_URL = "https://api.weatherapi.com/v1"
 WEATHER_API_SEARCH = "/search.json"
 WEATHER_API_CURRENT_WHEATHER = "/current.json"
 
+
 @collector.hidden(command="/debug")
 async def show_all_messages(message: Message) -> None:
     if message.user_huid not in DEBUG_USERS:
@@ -33,8 +34,8 @@ async def show_all_messages(message: Message) -> None:
 
 
 async def get_weather(endpoint: str, query: dict) -> dict:
+    client: httpx.AsyncClient
     async with httpx.AsyncClient(base_url=WEATHER_API_BASE_URL) as client:
-        client: httpx.AsyncClient
         config = get_app_settings()
         response = await client.get(
             endpoint,
@@ -45,8 +46,8 @@ async def get_weather(endpoint: str, query: dict) -> dict:
         return response.json()
 
 
-async def execute_smart_app(message: Message) -> Any:
-    smartapp = SmartAppEvent(**message.data.__dict__)
+async def execute_smart_app(message: Message) -> Any:  # noqa: WPS231
+    smartapp = SmartAppEvent(**message.data.__dict__)  # noqa: WPS609
 
     smartapp_type = smartapp.data["type"]
     response = {"type": smartapp_type}
@@ -91,7 +92,7 @@ async def execute_smart_app(message: Message) -> Any:
 @collector.smartapp()
 async def smartapp_handler(message: Message) -> None:
     # get smartapp.
-    incoming_smartapp = SmartAppEvent(**message.data.__dict__)
+    incoming_smartapp = SmartAppEvent(**message.data.__dict__)  # noqa: WPS609
 
     response = await execute_smart_app(message)
 
