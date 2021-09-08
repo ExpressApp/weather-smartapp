@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Any, List, Optional
 
 from botx import ExpressServer
-from pydantic import BaseSettings, PostgresDsn, RedisDsn, validator, SecretStr
+from pydantic import BaseSettings, PostgresDsn, RedisDsn, SecretStr, validator
 
 
 class AppEnvTypes(str, Enum):  # noqa:WPS600, WPS115
