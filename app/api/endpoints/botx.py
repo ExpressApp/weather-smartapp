@@ -1,7 +1,7 @@
 """Endpoints for communication with botx."""
 
 from botx import IncomingMessage, Message, SendingSmartApp, Status
-from botx.clients.methods.v3.smartapp import post as smartapp_method
+from botx.clients.methods.v3.smartapps.smartapp_event import SmartAppEvent
 from botx.models import events
 from botx.models.status import StatusRecipient
 from fastapi import APIRouter, Depends
@@ -48,9 +48,7 @@ async def smartapp_debug(message: IncomingMessage) -> dict:
 
     sending_smartapp = SendingSmartApp.from_message_with_smartapp(response, bot_message)
 
-    sending_smartapp_dict = smartapp_method.SmartAppEvent(
-        **sending_smartapp.dict()
-    ).dict()
+    sending_smartapp_dict = SmartAppEvent(**sending_smartapp.dict()).dict()
     return {**sending_smartapp_dict}
 
 

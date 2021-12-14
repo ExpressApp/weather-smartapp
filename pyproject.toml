@@ -10,8 +10,7 @@ authors = []
 [tool.poetry.dependencies]
 python = "~3.8"
 
-botx = { git = "https://github.com/ExpressApp/pybotx.git", branch = "feature/smartapp" }
-
+botx = "~0.28.0"
 fastapi = "~0.61.2"
 uvicorn = "~0.12.3"
 python-multipart = "~0.0.5"
