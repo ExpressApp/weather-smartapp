@@ -3,7 +3,7 @@ import pprint
 from typing import Any
 
 import httpx
-from botx import Collector, Message, SendingSmartApp
+from botx import Collector, Message, SendingSmartAppEvent
 from botx.models.events import SmartAppEvent
 from loguru import logger
 
@@ -47,7 +47,7 @@ async def get_weather(endpoint: str, query: dict) -> dict:
 
 
 async def execute_smart_app(message: Message) -> Any:  # noqa: WPS231
-    smartapp = SmartAppEvent(**message.data.__dict__)  # noqa: WPS609
+    smartapp = SmartAppEvent(**message.data)  # noqa: WPS609
 
     smartapp_type = smartapp.data["type"]
     response = {"type": smartapp_type}
@@ -89,17 +89,17 @@ async def execute_smart_app(message: Message) -> Any:  # noqa: WPS231
     return response
 
 
-@collector.smartapp()
+@collector.smartapp_event()
 async def smartapp_handler(message: Message) -> None:
     # get smartapp.
-    incoming_smartapp = SmartAppEvent(**message.data.__dict__)  # noqa: WPS609
+    incoming_smartapp = SmartAppEvent(**message.data)  # noqa: WPS609
 
     response = await execute_smart_app(message)
 
     # helper for construct sending data.
-    sending_smartapp = SendingSmartApp.from_message_with_smartapp(response, message)
+    sending_smartapp = SendingSmartAppEvent.from_message(response, message)
 
-    await message.bot.send_smartapp(message.credentials, sending_smartapp)
+    await message.bot.send_smartapp_event(message.credentials, sending_smartapp)
 
     # logging
     incoming_log = f"incoming message:\n{pprint.pformat(incoming_smartapp.dict())}"

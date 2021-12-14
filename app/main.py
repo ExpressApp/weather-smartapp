@@ -1,8 +1,8 @@
 """Application with configuration for events, routers and middleware."""
-from botx import ServerUnknownError
+from botx import UnknownBotError
 from fastapi import FastAPI
 
-from app.api.error_handlers import server_unknown
+from app.api.error_handlers import unknown_bot
 from app.api.routers import router
 from app.bot.bot import bot
 from app.services.static_files import StaticFilesCustomHeaders
@@ -29,7 +29,7 @@ def get_application() -> FastAPI:
     application.add_event_handler("shutdown", shutdown(bot_app=bot))
 
     application.add_exception_handler(
-        ServerUnknownError, server_unknown.message_from_unknown_server_handler
+        UnknownBotError, unknown_bot.message_from_unknown_bot_handler
     )
 
     application.include_router(router)

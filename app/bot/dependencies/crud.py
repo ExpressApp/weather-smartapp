@@ -22,7 +22,7 @@ async def auto_models_update(message: Message) -> None:
     if message.command.command_type == CommandTypes.system:
         if message.command.body == SystemEvents.chat_created.value:
             await _update_chat_members(message, cts, chat)
-        elif message.command.body == SystemEvents.smartapp.value:
+        elif message.command.body == SystemEvents.smartapp_event.value:
             await _update_user_info(message, cts, chat)
     else:
         await _update_user_info(message, cts, chat)

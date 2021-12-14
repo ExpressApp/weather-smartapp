@@ -1,6 +1,6 @@
 """Endpoints for communication with botx."""
 
-from botx import IncomingMessage, Message, SendingSmartApp, Status
+from botx import IncomingMessage, Message, SendingSmartAppEvent, Status
 from botx.clients.methods.v3.smartapps.smartapp_event import SmartAppEvent
 from botx.models import events
 from botx.models.status import StatusRecipient
@@ -46,7 +46,7 @@ async def smartapp_debug(message: IncomingMessage) -> dict:
     except Exception as exc:
         return {"executing command error": exc.args}
 
-    sending_smartapp = SendingSmartApp.from_message_with_smartapp(response, bot_message)
+    sending_smartapp = SendingSmartAppEvent.from_message(response, bot_message)
 
     sending_smartapp_dict = SmartAppEvent(**sending_smartapp.dict()).dict()
     return {**sending_smartapp_dict}

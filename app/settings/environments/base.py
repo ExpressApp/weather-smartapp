@@ -2,7 +2,7 @@
 from enum import Enum
 from typing import Any, List, Optional
 
-from botx import ExpressServer
+from botx import BotXCredentials
 from pydantic import BaseSettings, PostgresDsn, RedisDsn, SecretStr, validator
 
 
@@ -45,20 +45,28 @@ class AppSettings(BaseAppSettings):
     WEATHER_SECRET_KEY: SecretStr
 
     @validator("BOT_CREDENTIALS", pre=True)
-    def parse_credentials(cls, credentials: str) -> List[ExpressServer]:  # noqa: N805
-        """
-        Parse bot credentials separated by comma.
+    @classmethod
+    def parse_bot_credentials(cls, raw_credentials: Any) -> List[BotXCredentials]:
+        """Parse bot credentials separated by comma.
 
-        Each entry must be separated by | or @.
+        Each entry must be separated by "@".
         """
-        if not credentials:
-            raise ValueError("BotCredentials are required")
-        servers = []
-        credentials_list = credentials.replace(",", " ").split()
-        for server_credentials in credentials_list:
-            server_credentials = server_credentials.replace("|", "@")
-            host, secret = server_credentials.split("@", 2)
-            host, secret = host.strip(), secret.strip()
-            servers.append(ExpressServer(host=host, secret_key=secret))
+        if not raw_credentials:
+            raise ValueError("`BOT_CREDENTIALS` can't be empty")
 
-        return servers
+        return [
+            cls._build_credentials_from_string(credentials_str)
+            for credentials_str in raw_credentials.replace(",", " ").split()
+        ]
+
+    @classmethod
+    def _build_credentials_from_string(cls, credentials_str: str) -> BotXCredentials:
+        credentials_str = credentials_str.replace("|", "@")
+        assert (  # noqa: S101
+            credentials_str.count("@") == 2
+        ), "Have you forgot to add `bot_id`?"
+
+        host, secret_key, bot_id = [
+            str_value.strip() for str_value in credentials_str.split("@")
+        ]
+        return BotXCredentials(host=host, secret_key=secret_key, bot_id=bot_id)

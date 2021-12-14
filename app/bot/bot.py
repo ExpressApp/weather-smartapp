@@ -9,7 +9,7 @@ from app.settings.config import get_app_settings
 config = get_app_settings()
 
 bot = Bot(
-    known_hosts=config.BOT_CREDENTIALS,
+    bot_accounts=config.BOT_CREDENTIALS,
     dependencies=[Depends(auto_models_update)],
 )
 
