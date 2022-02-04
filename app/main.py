@@ -38,7 +38,10 @@ def get_application() -> FastAPI:
         "/smartapp_files",
         StaticFilesCustomHeaders(
             directory="smartapp_files",
-            headers={"cache-control": "max-age=28800, private"},
+            headers={
+                "cache-control": "no-store, no-cache, must-revalidate",
+                "expires": "-1",
+            },
         ),
         name="smartapp_files",
     )
