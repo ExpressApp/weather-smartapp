@@ -6,15 +6,15 @@ services:
     container_name: weather-smartapp
     environment:
       - BOT_CREDENTIALS=cts_host@secret_key@bot_id
-      - DB_CONNECTION=postgres://postgres_user:postgres_password@postgres/postgres_db
-      - SMARTAPP_API_VERSION=1
-      - WEATHER_SECRET_KEY=secret
-      - DEBUG=false
+      - DB_CONNECTION=postgres://postgres:postgres@weather-smartapp-postgres/weather_smartapp_db
+      - REDIS_DSN=redis://weather-smartapp-redis/0
+      - DEBUG=true
     ports:
       - "8000:8000"  # Отредактируйте порт хоста (первый), если он уже занят
     restart: always
     depends_on:
       - postgres
+      - redis
     logging:
       driver: "json-file"
       options:
@@ -23,14 +23,14 @@ services:
 
   postgres:
     image: postgres:13.2-alpine
-    container_name: postgres
+    container_name: weather-smartapp-postgres
     environment:
-      - POSTGRES_USER=postgres_user
-      - POSTGRES_PASSWORD=postgres_password
-      - POSTGRES_DB=postgres_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=weather_smartapp_db
     restart: always
     volumes:
-      - ./postgresdata:/var/lib/postgresql/data
+      - ./.storages/postgresdata:/var/lib/postgresql/data
     logging:
       driver: "json-file"
       options:
