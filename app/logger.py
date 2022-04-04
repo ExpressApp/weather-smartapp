@@ -37,6 +37,10 @@ def setup_logger() -> "Logger":
     logging.root.handlers = [InterceptHandler()]
     logging.root.setLevel(logging.DEBUG if settings.DEBUG else logging.INFO)
 
+    # Enable botx logger
+    _logger.enable("pybotx")
+    _logger.disable("httpx")
+
     # Remove every other logger's handlers and propagate to root logger
     for name in logging.root.manager.loggerDict.keys():
         logging.getLogger(name).handlers = []

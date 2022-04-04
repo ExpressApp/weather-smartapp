@@ -1,9 +1,9 @@
 """Application settings."""
 
-from typing import Any
+from typing import Any, List
 from uuid import UUID
 
-from botx import BotAccountWithSecret
+from pybotx import BotAccountWithSecret
 from pydantic import AnyUrl, BaseSettings, validator
 
 
@@ -11,7 +11,7 @@ class AppSettings(BaseSettings):
     class Config:  # noqa: WPS431
         env_file = ".env"
 
-    # TODO: Change type to `list[BotAccountWithSecret]` after closing:
+    # TODO: Change type to `List[BotAccountWithSecret]` after closing:
     # https://github.com/samuelcolvin/pydantic/issues/1458
     BOT_CREDENTIALS: Any
 
@@ -28,7 +28,7 @@ class AppSettings(BaseSettings):
 
     @validator("BOT_CREDENTIALS", pre=True)
     @classmethod
-    def parse_bot_credentials(cls, raw_credentials: Any) -> list[BotAccountWithSecret]:
+    def parse_bot_credentials(cls, raw_credentials: Any) -> List[BotAccountWithSecret]:
         """Parse bot credentials separated by comma.
 
         Each entry must be separated by "@" or "|".

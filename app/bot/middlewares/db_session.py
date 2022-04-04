@@ -1,6 +1,6 @@
 """Middleware for creating db_session per-request."""
 
-from botx_smartapp_rpc import HandlerWithArgs, RPCArgsBaseModel, RPCResponse, SmartApp
+from pybotx_smartapp_rpc import HandlerWithArgs, RPCArgsBaseModel, RPCResponse, SmartApp
 
 
 async def db_session_middleware(

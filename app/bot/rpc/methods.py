@@ -1,5 +1,5 @@
 """RPC methods."""
-from botx_smartapp_rpc import RPCArgsBaseModel, RPCResultResponse, RPCRouter, SmartApp
+from pybotx_smartapp_rpc import RPCArgsBaseModel, RPCResultResponse, RPCRouter, SmartApp
 
 from app.bot.middlewares.db_session import db_session_middleware
 from app.db.weather.repo import UserRepo
