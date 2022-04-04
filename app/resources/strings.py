@@ -31,20 +31,38 @@ class TemplateFormatterLookup(TemplateLookup):
 
 
 lookup = TemplateFormatterLookup(
-    directories=["app/resources/templates"], input_encoding="utf-8"
+    directories=["app/resources/templates"],
+    input_encoding="utf-8",
+    strict_undefined=True,
 )
 
-BOT_NAME = "weatherbot"
+BOT_PROJECT_NAME = "weather-smartapp"
+BOT_DISPLAY_NAME = "Weather Smartapp"
+
 CHAT_CREATED_TEMPLATE = lookup.get_template("chat_created.txt.mako")
 HELP_COMMAND_MESSAGE_TEMPLATE = lookup.get_template("help.txt.mako")
 HELP_COMMAND_DESCRIPTION = "Показать список команд"
 HELP_LABEL = "/help"
 
 # Warnings
-BOT_CANT_COMMUNICATE_WITH_OTHERS_CTS = "\n".join(
+OTHER_CTS_WARNING = "\n".join(
     [
         "Данный бот зарегистрирован на другом CTS.",
-        "Для продолжения работы напишите боту со своего CTS.",
-        "Найти его можно через поиск корпоративных контактов.",
+        "Обратитесь к администратору, чтобы он зарегистрировал бота на вашем CTS",
+    ]
+)
+
+
+OTHER_CTS_WITH_BOT_MENTION_WARNING = "\n".join(
+    [
+        "Данный бот зарегистрирован на другом CTS.",
+        "Перейдите по `меншну`, чтобы попасть к вашему боту",
+    ]
+)
+
+SOMETHING_GOES_WRONG = "\n".join(
+    [
+        "При обработке сообщения или нажатия на кнопку произошла непредвиденная ошибка.",
+        "Пожалуйста, сообщите об этом вашему администратору бота.",
     ]
 )

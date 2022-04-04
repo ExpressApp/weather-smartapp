@@ -1,59 +1,64 @@
 """Endpoints for communication with botx."""
 
-from botx import IncomingMessage, Message, SendingSmartAppEvent, Status
-from botx.clients.methods.v3.smartapps.smartapp_event import SmartAppEvent
-from botx.models import events
-from botx.models.status import StatusRecipient
-from fastapi import APIRouter, Depends
-from starlette.requests import Request
-from starlette.status import HTTP_202_ACCEPTED
+from http import HTTPStatus
 
-from app.api.dependencies.status_recipient import get_status_recipient
-from app.bot.bot import bot
-from app.bot.commands.weather import execute_smart_app
+from fastapi import APIRouter, Request
+from fastapi.responses import JSONResponse
+from pybotx import (
+    Bot,
+    UnknownBotAccountError,
+    build_bot_disabled_response,
+    build_command_accepted_response,
+)
+
+from app.api.dependencies.bot import bot_dependency
+from app.logger import logger
 
 router = APIRouter()
 
 
-@router.post("/command", name="botx:command", status_code=HTTP_202_ACCEPTED)
-async def bot_command(message: IncomingMessage) -> None:
+@router.post("/command")
+async def command_handler(request: Request, bot: Bot = bot_dependency) -> JSONResponse:
     """Receive commands from users. Max timeout - 5 seconds."""
 
-    await bot.execute_command(message.dict())
+    try:
+        bot.async_execute_raw_bot_command(await request.json())
+    except ValueError:
+        error_label = "Bot command validation error"
+        logger.exception(error_label)
 
+        return JSONResponse(
+            build_bot_disabled_response(error_label),
+            status_code=HTTPStatus.SERVICE_UNAVAILABLE,
+        )
+    except UnknownBotAccountError as exc:
+        error_label = f"No credentials for bot {exc.bot_id}"
+        logger.warning(error_label)
 
-@router.get("/status", name="botx:status", response_model=Status)
-async def bot_status(
-    recipient: StatusRecipient = Depends(get_status_recipient),
-) -> Status:
-    """Send commands with short descriptions."""
-    return await bot.status()
+        return JSONResponse(
+            build_bot_disabled_response(error_label),
+            status_code=HTTPStatus.SERVICE_UNAVAILABLE,
+        )
 
-
-@router.post(
-    "/command/smartapp", name="debug:samrtapp-event", status_code=HTTP_202_ACCEPTED
-)
-async def smartapp_debug(message: IncomingMessage) -> dict:
-    """Send botx command to sender."""
-    # all internal mutations
-    bot_message = Message.from_dict(message.dict(), bot)
-    incoming_smartapp = events.SmartAppEvent(
-        **bot_message.data.__dict__  # noqa: WPS609
+    return JSONResponse(
+        build_command_accepted_response(), status_code=HTTPStatus.ACCEPTED
     )
 
-    try:
-        response = await execute_smart_app(incoming_smartapp)
-    except Exception as exc:
-        return {"executing command error": exc.args}
 
-    sending_smartapp = SendingSmartAppEvent.from_message(response, bot_message)
+@router.get("/status")
+async def status_handler(request: Request, bot: Bot = bot_dependency) -> JSONResponse:
+    """Show bot status and commands list."""
 
-    sending_smartapp_dict = SmartAppEvent(**sending_smartapp.dict()).dict()
-    return {**sending_smartapp_dict}
+    status = await bot.raw_get_status(dict(request.query_params))
+    return JSONResponse(status)
 
 
-@router.post("/command/echo", name="debug:echo", status_code=HTTP_202_ACCEPTED)
-async def smartapp_echo(request: Request) -> dict:
-    """Echo."""
+@router.post("/notification/callback")
+async def callback_handler(request: Request, bot: Bot = bot_dependency) -> JSONResponse:
+    """Process BotX methods callbacks."""
 
-    return await request.json()
+    bot.set_raw_botx_method_result(await request.json())
+    return JSONResponse(
+        build_command_accepted_response(),
+        status_code=HTTPStatus.ACCEPTED,
+    )

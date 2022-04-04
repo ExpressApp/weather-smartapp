@@ -1,20 +1,13 @@
 """Configuration for bot instance."""
-from botx import Bot, Depends
 
-from app.bot.commands import common, debug, weather
-from app.bot.dependencies.crud import auto_models_update
-from app.resources import strings
-from app.settings.config import get_app_settings
+from pybotx import Bot
 
-config = get_app_settings()
+from app.bot.commands import common
+from app.bot.error_handlers.internal_error import internal_error_handler
+from app.settings import settings
 
 bot = Bot(
-    bot_accounts=config.BOT_CREDENTIALS,
-    dependencies=[Depends(auto_models_update)],
+    collectors=[common.collector],
+    bot_accounts=settings.BOT_CREDENTIALS,
+    exception_handlers={Exception: internal_error_handler},
 )
-
-bot.state.bot_name = strings.BOT_NAME
-
-bot.include_collector(common.collector)
-bot.include_collector(weather.collector)
-bot.include_collector(debug.collector)
