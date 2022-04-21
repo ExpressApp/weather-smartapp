@@ -1,7 +1,7 @@
 # Weather SmartApp
 
 
-## Инструкция по развёртыванию {{cookiecutter.bot_project_name}}
+## Инструкция по развёртыванию weather-smartapp
 
 1. Воспользуйтесь инструкцией [Руководство
    администратора](https://express.ms/admin_guide.pdf) `-> Эксплуатация корпоративного
