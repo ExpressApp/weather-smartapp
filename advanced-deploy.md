@@ -9,7 +9,6 @@
   сервера `->` Управление контактами `->` Чат-боты.
 * `POSTGRES_DSN`: DSN для БД PostgreSQL, например:
   `postgres://postgres_user:postgres_password@postgres:port/db_name`
-* `REDIS_DSN`: DSN для хранилища Redis, например: `redis://redis:6379/0`
 * `DEBUG` [`false`]: Включает вывод сообщений уровня `DEBUG` (по-умолчанию выводятся
     сообщения с уровня `INFO`).
 * `SQL_DEBUG` [`false`]: Включает вывод запросов к БД PostgreSQL.
@@ -19,13 +18,13 @@
 
 **Примечание**: Чтобы легко добавлять новых ботов на сервер, хранилища находятся в
 отдельной docker-сети и используются несколькими ботами сразу (каждый обращается к своей
-БД, но к единственному экземпляру PosgreSQL/Redis). При необходимости хранилища и бота
+БД, но к единственному экземпляру PostgreSQL). При необходимости хранилища и бота
 легко объединить в один docker-compose файл.
 
 
 ### Настройка хранилищ, используемых ботом
 
-1. Создайте директорию для PosgreSQL+Redis.
+1. Создайте директорию для PostgreSQL.
 
 ```shell
 mkdir -p /opt/express/bots/storages
@@ -48,22 +47,6 @@ services:
       - express_bots_storages
     volumes:
       - /opt/express/bots/storages/postgresdata:/var/lib/postgresql/data
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "10"
-
-  redis:
-    image: redis:6.2-alpine
-    env_file: .env
-    ports:
-      - "6379:6379"
-    restart: always
-    networks:
-      - express_bots_storages
-    volumes:
-      - /opt/express/bots/storages/redisdata:/data
     logging:
       driver: "json-file"
       options:
@@ -146,7 +129,6 @@ services:
     restart: always
     depends_on:
       - postgres
-      - redis
     logging:
       driver: "json-file"
       options:
