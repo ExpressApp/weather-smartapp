@@ -6,7 +6,7 @@ services:
     container_name: weather-smartapp
     environment:
       - BOT_CREDENTIALS=cts_host@secret_key@bot_id
-      - DB_CONNECTION=postgres://postgres:postgres@weather-smartapp-postgres/weather_smartapp_db
+      - POSTGRES_DSN=postgres://postgres:postgres@weather-smartapp-postgres/weather_smartapp_db
       - REDIS_DSN=redis://weather-smartapp-redis/0
       - DEBUG=true
     ports:
@@ -14,7 +14,6 @@ services:
     restart: always
     depends_on:
       - postgres
-      - redis
     logging:
       driver: "json-file"
       options:
