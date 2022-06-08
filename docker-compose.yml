@@ -14,7 +14,6 @@ services:
     restart: always
     depends_on:
       - postgres
-      - redis
     logging:
       driver: "json-file"
       options:
