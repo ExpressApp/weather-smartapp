@@ -7,8 +7,9 @@ services:
     environment:
       - BOT_CREDENTIALS=cts_host@secret_key@bot_id
       - POSTGRES_DSN=postgres://postgres:postgres@weather-smartapp-postgres/weather_smartapp_db
-      - REDIS_DSN=redis://weather-smartapp-redis/0
       - DEBUG=true
+      - WEATHER_API_URL=https://api.weatherapi.com/v1
+      - WEATHER_SECRET_KEYweather_secret_key
     ports:
       - "8000:8000"  # Отредактируйте порт хоста (первый), если он уже занят
     restart: always
